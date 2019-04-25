@@ -5,7 +5,7 @@ const debug = require('debug')('express-mongoose:index');
 const config = require('./config');
 
 // connect to mongo db
-const mongoUri = `mongodb://${config.mongo.user}:${config.mongo.password}@${config.mongo.host}:${config.mongo.port}/${config.mongo.db}`;
+const mongoUri = `mongodb+srv://${config.mongo.user}:${config.mongo.password}@${config.mongo.host}/${config.mongo.db}`;
 const mongoConfig = {
   keepAlive: 1,
   useNewUrlParser: true,
