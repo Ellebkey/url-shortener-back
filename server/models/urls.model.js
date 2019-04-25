@@ -30,8 +30,8 @@ const UrlSchema = new mongoose.Schema({
  */
 UrlSchema.statics = {
   /**
-   * Get user
-   * @param {ObjectId} id - The objectId of user.
+   * Get url
+   * @param {ObjectId} id - id of url.
    * @returns {Promise<Url, APIError>}
    */
   get(id) {
@@ -39,6 +39,11 @@ UrlSchema.statics = {
       .exec();
   },
 
+  /**
+   * Get url
+   * @param {ObjectId} shortId - shortId of url.
+   * @returns {Promise<Url, APIError>}
+   */
   getByShorId(shortId) {
     return this.findOne({ shortId });
   },
