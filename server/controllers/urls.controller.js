@@ -93,4 +93,24 @@ controller.getByShorId = async (req, res, next, id) => {
  */
 controller.read = (req, res) => res.json(req.urlDB);
 
+/**
+ * Create new url
+ * @property {string} req.body.originalUrl - The url to be shortened.
+ * @returns {Urls}
+ */
+controller.updateVisit = async (req, res, next) => {
+  const { urlDB } = req;
+
+  urlDB.visit += 1;
+
+  try {
+    const savedUrl = await urlDB.save();
+    return res.json(savedUrl);
+  } catch (err) {
+    logger.error(`Error creating url ${err}`);
+    apiError.error = err;
+    return next(apiError);
+  }
+};
+
 module.exports = controller;

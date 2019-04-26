@@ -8,8 +8,8 @@ router.route('/')
   .get(urls.list);
 
 router.route('/:shortId')
+  .put(urls.updateVisit)
   .get(urls.read);
-
 
 router.param('shortId', urls.getByShorId);
 

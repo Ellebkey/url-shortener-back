@@ -18,6 +18,10 @@ const UrlSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  visit: {
+    type: Number,
+    default: 1
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -56,7 +60,7 @@ UrlSchema.statics = {
    */
   list({ skip = 0, limit = 100 } = {}) {
     return this.find()
-      .sort({ createdAt: -1 })
+      .sort({ visit: -1 })
       .skip(+skip)
       .limit(+limit)
       .lean() // no mongoose objects

@@ -31,7 +31,7 @@ const nodemon = () => {
 
   const env = {
     NODE_ENV: process.env.NODE_ENV || 'development',
-    PORT: '4040',
+    PORT: '2001',
     TZ: 'utc'
   };
 
