@@ -1,4 +1,4 @@
-# URL Shortener Fronted
+# URL Shortener Backend
 
 # [![Express ES6 REST API Starter](https://i.imgur.com/7SPpeOI.png)](https://github.com/Ellebkey/node-express-mongoose)
 
