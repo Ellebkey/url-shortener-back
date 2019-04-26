@@ -11,6 +11,9 @@ router.route('/:shortId')
   .put(urls.updateVisit)
   .get(urls.read);
 
+router.route('/seed')
+  .post(urls.bulkCreate);
+
 router.param('shortId', urls.getByShorId);
 
 module.exports = router;

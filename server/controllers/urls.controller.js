@@ -5,6 +5,7 @@ const urlMetadata = require('url-metadata');
 const Urls = require('../models/urls.model');
 const logger = require('../../config/winston');
 const APIError = require('../utils/APIError');
+const seedUrls = require('../utils/seed-urls');
 
 const apiError = new APIError({
   message: 'An unexpected error occurred',
@@ -34,19 +35,9 @@ controller.list = async (req, res, next) => {
   }
 };
 
-/**
- * Create new url
- * @property {string} req.body.originalUrl - The url to be shortened.
- * @returns {Urls}
- */
-controller.create = async (req, res, next) => {
-  const { originalUrl, host } = req.body;
+const createMethod = async (originalUrl, host, next) => {
   try {
-    if (!validUrl.isUri(originalUrl)) {
-      logger.error('That is not a valid url');
-      apiError.message = 'That is not a valid url';
-      return next(apiError);
-    }
+    if (!validUrl.isUri(originalUrl)) return { valid: false };
 
     const metadata = await urlMetadata(originalUrl);
     const title = `${metadata.title.slice(0, 16)}...`;
@@ -60,7 +51,31 @@ controller.create = async (req, res, next) => {
       shortenedUrl,
       title
     });
-    return res.json(url);
+    return { url, valid: true };
+  } catch (err) {
+    logger.error(`Error creating url ${err}`);
+    apiError.error = err;
+    return next(apiError);
+  }
+};
+
+/**
+ * Create new url
+ * @property {string} req.body.originalUrl - The url to be shortened.
+ * @returns {Urls}
+ */
+controller.create = async (req, res, next) => {
+  const { originalUrl, host } = req.body;
+  try {
+    const createdUrl = await createMethod(originalUrl, host, next);
+
+    if (!createdUrl.valid) {
+      logger.error('That is not a valid url');
+      apiError.message = 'That is not a valid url';
+      return next(apiError);
+    }
+
+    return res.json(createdUrl.url);
   } catch (err) {
     logger.error(`Error creating url ${err}`);
     apiError.error = err;
@@ -111,6 +126,23 @@ controller.updateVisit = async (req, res, next) => {
   try {
     const savedUrl = await urlDB.save();
     return res.json(savedUrl);
+  } catch (err) {
+    logger.error(`Error creating url ${err}`);
+    apiError.error = err;
+    return next(apiError);
+  }
+};
+
+
+controller.bulkCreate = async (req, res, next) => {
+  const { host } = req.body;
+  try {
+    const promiseUrls = [];
+    seedUrls.forEach((item) => {
+      promiseUrls.push(createMethod(item.originalUrl, host, next));
+    });
+    await Promise.all(promiseUrls);
+    return res.json({ res: 'success' });
   } catch (err) {
     logger.error(`Error creating url ${err}`);
     apiError.error = err;
