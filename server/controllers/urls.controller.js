@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const validUrl = require('valid-url');
 const shortid = require('shortid');
+const urlMetadata = require('url-metadata');
 const Urls = require('../models/urls.model');
 const logger = require('../../config/winston');
 const APIError = require('../utils/APIError');
@@ -47,13 +48,17 @@ controller.create = async (req, res, next) => {
       return next(apiError);
     }
 
+    const metadata = await urlMetadata(originalUrl);
+    const title = `${metadata.title.slice(0, 16)}...`;
+
     const shortId = shortid.generate();
     const shortenedUrl = `${host}/${shortId}`;
 
     const url = await Urls.create({
       originalUrl,
       shortId,
-      shortenedUrl
+      shortenedUrl,
+      title
     });
     return res.json(url);
   } catch (err) {
